@@ -519,7 +519,7 @@ int main()
                     << dividendYield << "\n";
         }
 
-        std::this_thread::sleep_for(std::chrono::seconds(12));
+        std::this_thread::sleep_for(std::chrono::seconds(12)); // already got banned from yahoo finance for ddos attempt. i would like to avoid the same sentence from other platforms ~_~
     }
 
     csvFile.close();
