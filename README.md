@@ -4,8 +4,8 @@ first ideas :
 ![image](https://github.com/user-attachments/assets/7a977874-e3ce-4354-92cf-7a22771807e3)
 the little guy don't like fixed parameters 
 
-model isn't in reinforcement
-fix collector
-manage csv information path
-add model input func from csv
-link each asset togethers before the training
+model isn't in reinforcement, 
+fix collector, 
+manage csv information path, 
+add model input func from csv, 
+link each asset togethers before the training.
