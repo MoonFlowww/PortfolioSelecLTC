@@ -1,6 +1,8 @@
+#pragma once
 #include <random>
+#include <vector>
+#include <algorithm>
 
-//RL policy
 class EpsilonGreedyPolicy {
 public:
     double epsilon;
@@ -11,14 +13,16 @@ public:
 
     int select_action(const std::vector<double>& action_values) {
         if (dis(gen) < epsilon) {
-            // Exploration: random action
+            // Exploration: rand action
             std::uniform_int_distribution<> action_dist(0, action_values.size() - 1);
             return action_dist(gen);
-        } else {
+        }
+        else {
             // Exploitation: highest value
             return std::distance(action_values.begin(), std::max_element(action_values.begin(), action_values.end()));
         }
     }
+
     void decay_epsilon(double decay_rate) {
         epsilon *= decay_rate;
     }
