@@ -53,12 +53,13 @@ int main() {
 
     AdamOptimizer adam(0.001, 0.9, 0.999, 1e-8);
     adam.initialize(final_layer.weights, final_layer.biases);
-
-    std::vector<double> target = { 0.8 }; // for dummy data, have to change the model for an Reinforcement one (no target)
     std::vector<double> combined_output;
 
 
 
+
+    EpsilonGreedyPolicy policy(0.1);
+    double epsilon_decay = 0.995;
 
     int epochs = 1000;
     for (int epoch = 0; epoch < epochs; ++epoch) {
@@ -72,23 +73,23 @@ int main() {
 
 
         std::vector<double> predictions = final_layer.forward(combined_output);
-
-        double loss = mse_loss(predictions, target);
+        
+        double reward = compute_reward(predictions, target);
+        
+        // adam update
         std::vector<double> grad_output = mse_grad(predictions, target);
-
         std::vector<std::vector<double>> dW;
         std::vector<double> dB;
         final_layer.backward(combined_output, grad_output, dW, dB);
-
         adam.update(final_layer.weights, final_layer.biases, dW, dB, epoch + 1);
 
+        // exploration little by little
+        policy.decay_epsilon(epsilon_decay);
+
         if (epoch % 100 == 0) {
-            std::cout << "Epoch: " << epoch << " - Loss: " << loss << std::endl;
+            std::cout << "Epoch: " << epoch << " - Reward: " << reward << std::endl;
         }
     }
-
-    std::vector<double> final_score = final_layer.forward(combined_output);
-    std::cout << "Inv Score : " << final_score[0] << std::endl;
 
     return 0;
 }
