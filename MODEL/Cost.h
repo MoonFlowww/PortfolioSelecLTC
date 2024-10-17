@@ -13,3 +13,9 @@ std::vector<double> mse_grad(const std::vector<double>& predictions, const std::
     }
     return grad;
 }
+
+// RL
+double compute_reward(const std::vector<double>& predictions, const std::vector<double>& targets) {
+    double loss = mse_loss(predictions, targets);
+    return -loss; //reward
+}
