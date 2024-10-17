@@ -1,7 +1,7 @@
 #include "LTC.h"
 #include "DenseLayer.h"
 #include "AdamOptimizer.h"
-#include "Cost.h"
+#include "EpsilonGreedyPolicy.h"
 #include <iostream>
 #include <vector>
 #include <random>
@@ -11,7 +11,6 @@ std::vector<double> concat(const std::vector<double>& v1, const std::vector<doub
     result.insert(result.end(), v2.begin(), v2.end());
     return result;
 }
-
 
 std::vector<double> generate_dummy_data(int size, double min_val = 0.0, double max_val = 1.0) {
     std::vector<double> data(size);
@@ -25,8 +24,15 @@ std::vector<double> generate_dummy_data(int size, double min_val = 0.0, double m
     return data;
 }
 
-int main() {
 
+double compute_reward(const std::vector<double>& portfolio_returns) {
+
+    double average_return = std::accumulate(portfolio_returns.begin(), portfolio_returns.end(), 0.0) / portfolio_returns.size();
+
+    return average_return;
+}
+
+int main() {
     int num_units_macro = 5;
     int num_units_accounting = 5;
     int num_units_market = 5;
@@ -43,7 +49,6 @@ int main() {
     std::vector<double> inputs_accounting = generate_dummy_data(input_size_accounting, 0.0, 1.0);
     std::vector<double> inputs_market = generate_dummy_data(input_size_market, 0.0, 1.0);
 
-
     std::vector<double> state_macro(num_units_macro, 0.0);
     std::vector<double> state_accounting(num_units_accounting, 0.0);
     std::vector<double> state_market(num_units_market, 0.0);
@@ -53,10 +58,6 @@ int main() {
 
     AdamOptimizer adam(0.001, 0.9, 0.999, 1e-8);
     adam.initialize(final_layer.weights, final_layer.biases);
-    std::vector<double> combined_output;
-
-
-
 
     EpsilonGreedyPolicy policy(0.1);
     double epsilon_decay = 0.995;
@@ -68,23 +69,23 @@ int main() {
         std::vector<double> new_state_market = ltc_market(inputs_market, state_market);
 
 
-        combined_output = concat(new_state_macro, new_state_accounting);
+        std::vector<double> combined_output = concat(new_state_macro, new_state_accounting);
         combined_output = concat(combined_output, new_state_market);
 
+        std::vector<double> portfolio_returns = final_layer.forward(combined_output);
 
-        std::vector<double> predictions = final_layer.forward(combined_output);
-        
-        double reward = compute_reward(predictions, target);
-        
-        // adam update
-        std::vector<double> grad_output = mse_grad(predictions, target);
+
+        double reward = compute_reward(portfolio_returns);
+
+
         std::vector<std::vector<double>> dW;
         std::vector<double> dB;
-        final_layer.backward(combined_output, grad_output, dW, dB);
+        final_layer.backward(combined_output, portfolio_returns, dW, dB);
         adam.update(final_layer.weights, final_layer.biases, dW, dB, epoch + 1);
 
-        // exploration little by little
+
         policy.decay_epsilon(epsilon_decay);
+
 
         if (epoch % 100 == 0) {
             std::cout << "Epoch: " << epoch << " - Reward: " << reward << std::endl;
