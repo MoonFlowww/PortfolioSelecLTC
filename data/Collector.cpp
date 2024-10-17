@@ -431,15 +431,13 @@ int main()
                 std::cerr << "Data: " << data << std::endl;
             }
         }
-        std::this_thread::sleep_for(std::chrono::seconds(12));
+        std::this_thread::sleep_for(std::chrono::seconds(15));
     }
 
-    // process each asset
     for (const auto& symbol : assets)
     {
         std::cout << "Processing: " << symbol << std::endl;
 
-        // Fetch stock prices (monthly data)
         std::map<std::string, double> stockPrices;
         std::vector<std::string> availableMonths;
         {
@@ -482,7 +480,8 @@ int main()
                     std::cerr << "Data: " << data << std::endl;
                 }
             }
-            std::this_thread::sleep_for(std::chrono::seconds(12));
+            std::this_thread::sleep_for(std::chrono::seconds(15));
+
         }
 
         // Fetch Company Overview
@@ -520,7 +519,7 @@ int main()
                         beta = std::stod(jsonData["Beta"].get<std::string>());
                 }
             }
-            std::this_thread::sleep_for(std::chrono::seconds(12));
+            std::this_thread::sleep_for(std::chrono::seconds(15));
         }
 
         // Fetch Financial Statements (latest quarterly data)
@@ -574,10 +573,10 @@ int main()
                         profitPerStock = std::stod(report["eps"].get<std::string>());
                 }
             }
-            std::this_thread::sleep_for(std::chrono::seconds(12));
+            std::this_thread::sleep_for(std::chrono::seconds(15));
         }
 
-        // Fetch Balance Sheet
+        // Balance Sheet
         {
             std::string url = "https://www.alphavantage.co/query?function=BALANCE_SHEET&symbol=" + symbol + "&apikey=" + alphaVantageApiKey;
             std::string data = httpGet(url);
@@ -611,7 +610,7 @@ int main()
                 }
             }
             // avoid ban
-            std::this_thread::sleep_for(std::chrono::seconds(12));
+            std::this_thread::sleep_for(std::chrono::seconds(15));
         }
 
         // Fetch Cash Flow Statement
@@ -653,7 +652,7 @@ int main()
                 }
             }
             //respect API rate limits
-            std::this_thread::sleep_for(std::chrono::seconds(12));
+            std::this_thread::sleep_for(std::chrono::seconds(15));
         }
 
         if (totalEquity != 0)
@@ -716,10 +715,9 @@ int main()
                 }
             }
             // Sleep to respect API rate limits
-            std::this_thread::sleep_for(std::chrono::seconds(12));
+            std::this_thread::sleep_for(std::chrono::seconds(15));
         }
 
-        // Calculate Performance Metrics
         double sharpeRatio = 0.0;
         double cagr = 0.0;
         double var = 0.0;
