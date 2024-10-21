@@ -7,4 +7,4 @@ the little guy don't like fixed parameters
 fix collector, 
 manage csv information path, 
 add model input func from csv, 
-link each asset togethers before the training. Things to try  ->  Inverse Reinforcement Learning
+link each asset togethers before the training. low prob idea IRl instead of RL
